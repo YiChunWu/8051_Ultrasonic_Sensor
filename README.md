@@ -9,9 +9,9 @@
 * ultrasonic.c
   * 中斷、計時器、UART初始化設定。
   * PWM操作、UART通訊。
-* LCM.h
+* LCD.h
   * LCD顯示器函式庫。
-* regx51.h
+* REGX52.h
   * 8051標準函式庫。
 
 ## Note
