@@ -7,8 +7,8 @@
 
 ## Files
 * ultrasonic.c
-  * 中斷、計時器、UART初始化設定。
-  * PWM操作、UART通訊。
+  * 中斷、計時器、初始化設定。
+  * UART發送接收、距離計算。
 * LCD.h
   * LCD顯示器函式庫。
 * REGX52.h
