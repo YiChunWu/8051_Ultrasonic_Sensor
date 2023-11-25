@@ -3,7 +3,7 @@
 ## Project Description
 下方為此專案的硬體配置，使用8051對下方麵包版Buck converter電路進行控制，以及透過UART接收另外一台微處理器量測到的電壓資訊，並將電壓資訊、Duty cycle顯示在LCD顯示屏上。
 
-![image](https://github.com/ZongWeiLin/8051_buck_converter/blob/main/Setup.png)
+![image](https://github.com/YiChunWu/8051_Ultrasonic_Sensor/blob/main/setup.png)
 
 ## Files
 * ultrasonic.c
