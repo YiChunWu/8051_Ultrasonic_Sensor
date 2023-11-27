@@ -9,8 +9,8 @@
 sbit TX=P3^1;
 sbit RX=P3^2;
 struct raw{
-		unsigned char first : 8; //高位元組 
-		unsigned char last : 8;  //低位元組     
+	unsigned char first : 8; //高位元組 
+	unsigned char last : 8;  //低位元組     
 } ;
 union myuint{
     unsigned int i;
@@ -156,7 +156,7 @@ void timer0 (void) interrupt 1
 
 // 利用Timer1啟動Timer0/傳送訊號給感測器
 void timer1 (void) interrupt 3
-{ TH1=(65536-cnt1)/256;
+{ 	TH1=(65536-cnt1)/256;
 	TL1=(65536-cnt1)%256; 
 	num1++;			    
 	if(num1>=10){ // 每0.5秒執行一次
