@@ -1,16 +1,15 @@
 //
 // mode=0: UART
-// mode=1: PulseWidth
-
-#include<regx51.h> 
+// mode=1: 脈衝
+#include<regx52.h> 
 #include<LCD.h> 
 #define cnt 90 
 #define cnt1 50000
 sbit TX=P3^1;
 sbit RX=P3^2;
 struct raw{
-	unsigned char first : 8; //高位元組 
-	unsigned char last : 8;  //低位元組     
+		unsigned char first : 8; //高位元組 
+		unsigned char last : 8;  //低位元組     
 } ;
 union myuint{
     unsigned int i;
@@ -23,7 +22,7 @@ code char string4[]={ "Mode: PulseWidth" };
 char uart[]={0,1,0,1,0,1,0,1,0,1};
 char string2[]={ "00000mm" }; 
 union myuint distance;
-unsigned char i,j,r;
+unsigned char pos,j,r;
 char num1,mode;
 
 
@@ -37,7 +36,7 @@ void main(void)
 	
 	num1=0;
 	mode=0;   // 預設為UART模式
-	i=0;
+	pos=0;
 	distance.i=0;
 	TX=1;
 	
@@ -58,14 +57,14 @@ void main(void)
 void ext0 (void) interrupt 0
 {		
 	if(mode==0){
-		delay_10us(6);
-		for(j=0;j<8;j++){  //高位元組 
-			delay_10us(4);
-			r=(RX==0)?0:1;
+		delay_10us(6);     // 延遲60微秒
+		for(j=0;j<8;j++){  // 高位元組 
+			delay_10us(4);   // 延遲40微秒
+			r=(RX==0)?0:1;   // 判斷腳位電壓
 			distance.r.first|= r<<j; // LSB to MSB
 		}
-		delay_10us(28);
-		for(j=0;j<8;j++){  //低位元組
+		delay_10us(28);    // 延遲280微秒
+		for(j=0;j<8;j++){  // 低位元組
 			delay_10us(4);
 			r=(RX==0)?0:1;
 			distance.r.last|= r<<j;  // LSB to MSB
@@ -81,9 +80,8 @@ void ext0 (void) interrupt 0
 		disp_p(1,10); 
 		disp_s(string2);  // 顯示障礙物距離(mm)
 		distance.i=0;
-		i=0;
+		pos=0;
 		EX0=0;
-// 		TR0=0;
 	}
 	else{
 		distance.r.first=TH0;
@@ -109,19 +107,18 @@ void ext1 (void) interrupt 2
 {		
 	delay_10us(20000); // 延遲0.2秒防按鈕開關彈跳
 	if(mode==0){
-		mode=1;    // 切換為PulseWidth模式
+		mode=1;    // 切換為脈衝模式
 		TX=0;
 		EX0=0;
 		TMOD=0x19; // Timer0、Timer1都為mode1(16bit timer),Timer0為外部開啟,Timer1為內部開啟
 		TL0=TH0=0; // 將計時暫存器歸0
 		
 		TR0=1;     // 啟動Timer0
-// 	  TR1=1;
 		write_c(0x01);   // 清除LCD顯示內容		
 		disp_p(1,1); 
 		disp_s(string1);
 		disp_p(2,1); 
-		disp_s(string4); // 顯示模式
+		disp_s(string4); // 顯示當前模式
 	}
 	else{
 		mode=0;    // 切換為UART模式
@@ -131,7 +128,7 @@ void ext1 (void) interrupt 2
 		disp_p(1,1); 
 		disp_s(string1);
 		disp_p(2,1); 
-		disp_s(string3); // 顯示模式
+		disp_s(string3); // 顯示當前模式
 	}
 }	
 
@@ -142,9 +139,9 @@ void timer0 (void) interrupt 1
 	if(mode==0){
 		TH0=(65536-cnt)/256;
 		TL0=(65536-cnt)%256;
-		if(i<9){ 
-			TX=uart[i];
-			i++;	
+		if(pos<9){ 
+			TX=uart[pos];
+			pos++;	
 		}
 		else{  // 重送完畢
 			TX=1;
@@ -154,15 +151,15 @@ void timer0 (void) interrupt 1
 	}
 }
 
-// 利用Timer1啟動Timer0/傳送訊號給感測器
+// 利用Timer1啟動Timer0傳送訊號給感測器
 void timer1 (void) interrupt 3
-{ 	TH1=(65536-cnt1)/256;
+{ TH1=(65536-cnt1)/256;
 	TL1=(65536-cnt1)%256; 
 	num1++;			    
 	if(num1>=10){ // 每0.5秒執行一次
 		if(mode==0){
 			num1=0;		
-			i=0;
+			pos=0;
 			TR0=1;	  // 啟動Timer0
 			TX=1;     // 設定TX為高電位準備傳送UART訊號
 		}
@@ -172,7 +169,7 @@ void timer1 (void) interrupt 3
 			delay_10us(2); // 傳送20微秒高電位
 			TX=0;
 			EX0=1;    // 開啟外部中斷0
-			TR0=1;	
+			TR0=1;	  // 啟動Timer0
 		}
 	}
 }
