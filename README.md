@@ -18,4 +18,4 @@
 
 [Notion](https://dirt-bramble-43c.notion.site/Ultrasonic-Sensor-on-8051-621c02e1827445cea55117b975528a6c?pvs=4)
 
-[Demo影片](https://www.youtube.com/watch?v=v3Ll4IgLot8)
+[Demo影片](https://youtu.be/NNE64kVdexI)
